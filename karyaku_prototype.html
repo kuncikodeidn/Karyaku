@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>KaryaKu — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1C2B33;
+    --navy-2:#233742;
+    --paper:#F6F3EC;
+    --paper-2:#EFE9DC;
+    --ink:#2A2622;
+    --ink-soft:#6B655C;
+    --orange:#FF6B35;
+    --orange-dark:#E0501C;
+    --green:#2D9C6F;
+    --green-bg:#E4F3EC;
+    --line: #DCD4C2;
+    --card: #FFFFFF;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#F2F1ED;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:100vh;
+    padding:32px 24px 40px;
+  }
+  .top-bar{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:var(--navy);
+    padding:10px 14px;
+    border-radius:999px;
+  }
+  .role-btn{
+    border:none;
+    background:transparent;
+    color:#B9C4CA;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:9px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .role-btn.active{
+    background:var(--orange);
+    color:#1C2B33;
+  }
+
+  .phone{
+    width:100%;
+    max-width:1024px;
+    height:calc(100vh - 80px);
+    min-height:560px;
+    background:var(--paper);
+    border-radius:28px;
+    border:1px solid rgba(28,43,51,0.08);
+    box-shadow: 0 18px 40px rgba(28,43,51,0.12);
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .status-bar{
+    width:100%;
+    max-width:1024px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .screen{
+    width:100%;
+    max-width:1024px;
+    flex:1;
+    overflow-y:auto;
+    padding:0 18px 96px;
+    display:none;
+  }
+  .bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    display:flex;
+    border-top:1px solid var(--line);
+    background:var(--card);
+    flex-shrink:0;
+    z-index:20;
+  }
+  .screen.active{display:block;}
+
+  /* Header */
+  .app-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:14px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--orange-dark);
+    font-weight:600;
+    margin:0 0 2px;
+  }
+  h1.page-title{
+    font-family:'Archivo',sans-serif;
+    font-size:22px;
+    font-weight:800;
+    margin:0;
+    color:var(--navy);
+    line-height:1.1;
+  }
+  .avatar{
+    width:38px;height:38px;border-radius:10px;
+    background:var(--navy);
+    color:var(--orange);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Archivo';font-weight:800;font-size:14px;
+    flex-shrink:0;
+  }
+
+  .search-row{
+    display:flex; gap:8px; margin-bottom:16px;
+  }
+  .search-box{
+    flex:1;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:13px;
+    color:var(--ink-soft);
+    font-family:'Inter';
+  }
+  .filter-chip{
+    width:38px;height:38px;
+    background:var(--navy);
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--paper);
+    font-size:14px;
+    flex-shrink:0;
+  }
+
+  /* Job card - timecard style */
+  .job-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:12px;
+    position:relative;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .job-card:active{transform:scale(0.98);}
+  .job-card::before{
+    content:"";
+    position:absolute;
+    left:0; top:14px; bottom:14px;
+    width:4px;
+    background:var(--orange);
+    border-radius:0 4px 4px 0;
+  }
+  .job-card .inner{padding-left:10px;}
+  .job-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom:8px;
+  }
+  .job-name{
+    font-family:'Archivo'; font-weight:700; font-size:15px;
+    color:var(--navy); margin:0 0 3px;
+  }
+  .job-loc{
+    font-size:11.5px; color:var(--ink-soft);
+    font-family:'Inter';
+  }
+  .match-badge{
+    font-family:'IBM Plex Mono'; font-size:10.5px; font-weight:600;
+    background:var(--green-bg); color:var(--green);
+    padding:4px 8px; border-radius:6px;
+    letter-spacing:0.02em;
+    white-space:nowrap;
+  }
+  .job-meta{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .meta-tag{
+    font-family:'IBM Plex Mono'; font-size:10px; color:var(--ink-soft);
+    background:var(--paper-2); padding:4px 7px; border-radius:5px;
+  }
+  .meta-tag.company-tag{
+    background:var(--green-bg);
+    color:var(--green);
+    font-weight:600;
+  }
+  .job-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px dashed var(--line);
+    padding-top:9px;
+  }
+  .wage{
+    font-family:'IBM Plex Mono'; font-weight:600; font-size:13px; color:var(--navy);
+  }
+  .wage span{font-size:10px; color:var(--ink-soft); font-weight:500;}
+  .go-btn{
+    background:var(--orange); color:#fff; border:none;
+    font-family:'Inter'; font-weight:600; font-size:11.5px;
+    padding:7px 13px; border-radius:8px; cursor:pointer;
+  }
+
+  /* Detail screen */
+  .back-row{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer;
+  }
+  .back-arrow{
+    width:32px;height:32px;border-radius:9px;
+    background:var(--card); border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px; color:var(--navy);
+  }
+  .back-label{font-family:'IBM Plex Mono'; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em;}
+
+  .detail-hero{
+    background:var(--navy);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:16px;
+    color:var(--paper);
+  }
+  .detail-hero .job-name{color:#fff; font-size:18px;}
+  .detail-hero .job-loc{color:#B9C4CA;}
+  .stat-row{
+    display:flex; gap:10px; margin-top:14px;
+  }
+  .stat-box{
+    flex:1; background:rgba(255,255,255,0.08);
+    border-radius:9px; padding:9px 10px;
+  }
+  .stat-num{font-family:'IBM Plex Mono'; font-weight:600; font-size:14px; color:var(--orange);}
+  .stat-label{font-size:9.5px; color:#B9C4CA; text-transform:uppercase; letter-spacing:0.05em; font-family:'IBM Plex Mono';}
+
+  .section-label{
+    font-family:'IBM Plex Mono'; font-size:11px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--ink-soft); font-weight:600;
+    margin:0 0 8px;
+  }
+  .desc-text{font-size:13px; line-height:1.6; color:var(--ink); margin-bottom:16px;}
+  .skill-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;}
+  .skill-pill{
+    background:var(--paper-2); border:1px solid var(--line);
+    border-radius:999px; padding:5px 11px; font-size:11px; font-family:'Inter'; font-weight:500;
+  }
+  .apply-btn{
+    width:100%; background:var(--orange); color:#fff; border:none;
+    font-family:'Archivo'; font-weight:700; font-size:14px;
+    padding:14px; border-radius:11px; cursor:pointer; margin-top:6px;
+  }
+
+  /* Profile screen */
+  .profile-header{
+    display:flex; align-items:center; gap:12px; margin-bottom:18px;
+  }
+  .profile-avatar{
+    width:56px;height:56px;border-radius:14px;
+    background:var(--navy); color:var(--orange);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Archivo';font-weight:800;font-size:20px;
+  }
+  .profile-name{font-family:'Archivo'; font-weight:800; font-size:17px; color:var(--navy); margin:0;}
+  .profile-rating{
+    font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--ink-soft); margin-top:2px;
+  }
+  .profile-rating b{color:var(--orange-dark);}
+
+  .badge-grid{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .badge{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:9px 12px; text-align:center; flex:1; min-width:90px;
+  }
+  .badge-num{font-family:'IBM Plex Mono'; font-weight:600; font-size:16px; color:var(--navy);}
+  .badge-label{font-size:9.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; font-family:'IBM Plex Mono'; margin-top:2px;}
+
+  .history-item{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:11px; padding:11px 13px; margin-bottom:9px;
+  }
+  .hist-name{font-family:'Inter'; font-weight:600; font-size:13px; color:var(--navy);}
+  .hist-date{font-size:10.5px; color:var(--ink-soft); font-family:'IBM Plex Mono'; margin-top:2px;}
+  .status-pill{
+    font-family:'IBM Plex Mono'; font-size:9.5px; font-weight:600;
+    padding:4px 8px; border-radius:6px; text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .status-selesai{background:var(--green-bg); color:var(--green);}
+  .status-berjalan{background:#FFF1E6; color:var(--orange-dark);}
+  .status-diterima{background:var(--green-bg); color:var(--green);}
+  .status-ditolak{background:#FFE6E6; color:#C00;}
+
+  /* Post job form (perusahaan) */
+  .form-group{margin-bottom:14px;}
+  .form-label{
+    font-family:'IBM Plex Mono'; font-size:10.5px; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--ink-soft); font-weight:600; margin-bottom:6px; display:block;
+  }
+  .form-input{
+    width:100%; border:1px solid var(--line); border-radius:9px;
+    padding:11px 12px; font-family:'Inter'; font-size:13px; background:var(--card); color:var(--ink);
+  }
+  textarea.form-input{resize:none; height:64px;}
+  .submit-btn{
+    width:100%; background:var(--navy); color:var(--paper); border:none;
+    font-family:'Archivo'; font-weight:700; font-size:14px;
+    padding:14px; border-radius:11px; cursor:pointer; margin-top:4px;
+  }
+
+  .candidate-card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:12px; margin-bottom:10px; display:flex; gap:11px; align-items:center;
+  }
+  .cand-avatar{
+    width:42px;height:42px;border-radius:10px; background:var(--paper-2);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Archivo'; font-weight:700; font-size:14px; color:var(--navy); flex-shrink:0;
+  }
+  .cand-info{flex:1;}
+  .cand-name{font-family:'Inter'; font-weight:600; font-size:13px; color:var(--navy);}
+  .cand-meta{font-size:10.5px; color:var(--ink-soft); font-family:'IBM Plex Mono'; margin-top:2px;}
+  .cand-actions{
+    display:flex; gap:6px; flex-direction:column;
+  }
+  .cand-action{
+    background:var(--green); color:#fff; border:none; border-radius:8px;
+    font-size:10.5px; font-family:'Inter'; font-weight:600; padding:7px 10px; cursor:pointer;
+    flex:1;
+  }
+  .cand-action.reject{
+    background:#D4D4D4; color:var(--navy);
+  }
+  .cand-action.reject:hover{
+    background:#C0C0C0;
+  }
+
+  /* Bottom nav */
+  .bottom-nav{
+    width:100%;
+    max-width:1024px;
+    align-self:center;
+    display:flex;
+    border-top:1px solid var(--line);
+    background:var(--card);
+    flex-shrink:0;
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:11px 0 13px; cursor:pointer; color:var(--ink-soft);
+  }
+  .nav-item.active{color:var(--orange-dark);}
+  .nav-icon{font-size:17px;}
+  .nav-label{font-family:'IBM Plex Mono'; font-size:9px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;}
+
+  .hint{
+    font-family:'Inter'; font-size:12px; color:#6B655C; text-align:center; max-width:340px;
+  }
+
+  .login-panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:24px 22px;
+    max-width:520px;
+    margin:0 auto 18px;
+    text-align:left;
+  }
+  .login-input{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    font-family:'Inter';
+    font-size:14px;
+    margin-top:10px;
+    color:var(--ink);
+    background:var(--paper);
+  }
+  .login-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:18px;
+  }
+  .login-btn{
+    width:100%;
+    background:var(--orange);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:14px;
+    font-family:'Inter';
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .login-error{
+    color:#B00020;
+    font-family:'Inter';
+    font-size:13px;
+    margin-top:10px;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding:16px 12px 24px;
+    }
+    .phone {
+      max-width:100%;
+      min-height:auto;
+      border-radius:22px;
+      box-shadow:0 10px 28px rgba(28,43,51,0.12);
+    }
+    .status-bar {
+      padding:0 14px;
+      font-size:12px;
+    }
+    .screen {
+      padding:0 14px 16px;
+    }
+    .app-header {
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .search-row {
+      align-items:center;
+      gap:8px;
+    }
+    .filter-chip {
+      width:38px;
+      justify-content:center;
+      padding-left:0;
+    }
+    .job-card .inner {
+      padding-left:0;
+    }
+    .job-top {
+      flex-direction:column;
+      gap:10px;
+    }
+    .job-bottom {
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .go-btn,
+    .cand-action {
+      width:100%;
+    }
+    .stat-row {
+      flex-direction:column;
+    }
+    .profile-header,
+    .history-item,
+    .candidate-card {
+      flex-direction:column;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .form-input,
+    textarea.form-input {
+      font-size:14px;
+    }
+    .nav-label {
+      font-size:8.5px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="status-bar"><span>09:41</span><span>KARYAKU</span></div>
+
+  <div class="screen active" id="login">
+    <div class="app-header">
+      <div>
+        <p class="eyebrow">Selamat Datang</p>
+        <h1 class="page-title">Masuk ke KaryaKu</h1>
+      </div>
+    </div>
+    <div class="login-panel">
+      <p class="desc-text">Masukkan username dan password Anda untuk masuk. Gunakan salah satu akun contoh di bawah.</p>
+      <input class="login-input" id="login-username" type="text" placeholder="Username" autocomplete="username">
+      <input class="login-input" id="login-password" type="password" placeholder="Password" autocomplete="current-password">
+      <div class="login-actions">
+        <button class="login-btn" onclick="validateLogin()">Masuk</button>
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <p class="desc-text" style="margin-top:12px; font-size:13px; color:var(--ink-soft);">Akun contoh:<br>pekerja1–pekerja10 / pekerja123<br>perusahaan1–perusahaan10 / perusahaan123</p>
+    </div>
+  </div>
+
+  <!-- ================= PEKERJA: BERANDA ================= -->
+  <div class="screen" id="p-beranda">
+    <div class="app-header">
+      <div>
+        <p class="eyebrow">Selamat Pagi</p>
+        <h1 class="page-title" id="p-beranda-name">Budi Santoso</h1>
+      </div>
+      <div class="avatar" id="p-beranda-avatar">BS</div>
+    </div>
+    <div class="search-row">
+      <div class="search-box">Cari lowongan di sekitar...</div>
+      <div class="filter-chip">⚙</div>
+    </div>
+    <p class="section-label" id="p-job-count">Lowongan cocok untuk anda</p>
+
+    <div id="p-job-list"></div>
+  </div>
+
+  <!-- ================= PEKERJA: DETAIL LOWONGAN ================= -->
+  <div class="screen" id="p-detail">
+    <div class="back-row" onclick="showScreen('p-beranda')">
+      <div class="back-arrow">←</div>
+      <span class="back-label">Kembali</span>
+    </div>
+
+    <div class="detail-hero">
+      <p class="job-name">Operator Jahit Borongan</p>
+      <p class="job-loc">📍 Konveksi Maju Jaya, Bandung</p>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">92%</div><div class="stat-label">Skill Match</div></div>
+        <div class="stat-box"><div class="stat-num">3 hr</div><div class="stat-label">Durasi</div></div>
+        <div class="stat-box"><div class="stat-num">8/8</div><div class="stat-label">Kuota</div></div>
+      </div>
+    </div>
+
+    <p class="section-label">Deskripsi Pekerjaan</p>
+    <p class="desc-text">Dibutuhkan operator jahit untuk menyelesaikan pesanan borongan seragam sekolah. Kerja dari pukul 08.00–16.00, sudah termasuk makan siang. Upah dibayar harian, langsung cair via aplikasi.</p>
+
+    <p class="section-label">Skill Dibutuhkan</p>
+    <div class="skill-row">
+      <span class="skill-pill">Jahit Mesin</span>
+      <span class="skill-pill">Obras</span>
+      <span class="skill-pill">Ketelitian Pola</span>
+    </div>
+
+    <p class="section-label">Upah</p>
+    <div class="desc-text" style="margin-bottom:6px;">Rp 150.000/hari — dibayar otomatis ke saldo KaryaKu setelah presensi diverifikasi.</div>
+
+    <button class="apply-btn" onclick="submitApplication()">Lamar Sekarang</button>
+  </div>
+
+  <!-- ================= PEKERJA: LAMARAN/RIWAYAT ================= -->
+  <div class="screen" id="p-lamaran">
+    <div class="app-header">
+      <div>
+        <p class="eyebrow">Status</p>
+        <h1 class="page-title">Lamaran Saya</h1>
+      </div>
+    </div>
+
+    <p class="section-label">Sedang Berjalan</p>
+    <div class="history-item">
+      <div>
+        <div class="hist-name">Operator Jahit Borongan</div>
+        <div class="hist-date">Mulai 2 Jul 2026</div>
+      </div>
+      <span class="status-pill status-berjalan">Diterima</span>
+    </div>
+
+    <p class="section-label" style="margin-top:16px;">Riwayat Selesai</p>
+    <div class="history-item">
+      <div>
+        <div class="hist-name">Packing Produk Snack</div>
+        <div class="hist-date">18 Jun 2026 · ⭐ 4.8</div>
+      </div>
+      <span class="status-pill status-selesai">Selesai</span>
+    </div>
+    <div class="history-item">
+      <div>
+        <div class="hist-name">Bongkar Muat Gudang</div>
+        <div class="hist-date">10 Jun 2026 · ⭐ 5.0</div>
+      </div>
+      <span class="status-pill status-selesai">Selesai</span>
+    </div>
+    <div class="history-item">
+      <div>
+        <div class="hist-name">Sablon Kaos Event</div>
+        <div class="hist-date">2 Jun 2026 · ⭐ 4.6</div>
+      </div>
+      <span class="status-pill status-selesai">Selesai</span>
+    </div>
+  </div>
+
+  <!-- ================= PEKERJA: PROFIL ================= -->
+  <div class="screen" id="p-profil">
+    <div class="profile-header">
+      <div class="profile-avatar" id="p-profile-avatar">BS</div>
+      <div>
+        <p class="profile-name" id="p-profile-name">Budi Santoso</p>
+        <p class="profile-rating" id="p-profile-rating">⭐ <b>4.8</b> · 27 pekerjaan selesai</p>
+      </div>
+    </div>
+
+    <div class="badge-grid">
+      <div class="badge"><div class="badge-num">27</div><div class="badge-label">Shift</div></div>
+      <div class="badge"><div class="badge-num">98%</div><div class="badge-label">Kehadiran</div></div>
+      <div class="badge"><div class="badge-num">Rp3,8jt</div><div class="badge-label">Bulan Ini</div></div>
+    </div>
+
+    <p class="section-label">Skill Terverifikasi</p>
+    <div class="skill-row">
+      <span class="skill-pill">Jahit Mesin</span>
+      <span class="skill-pill">Obras</span>
+      <span class="skill-pill">Packing</span>
+      <span class="skill-pill">Angkat Barang</span>
+      <span class="skill-pill">Sablon</span>
+    </div>
+
+    <p class="section-label">Dokumen</p>
+    <div class="history-item"><div class="hist-name">KTP — Terverifikasi</div><span class="status-pill status-selesai">✓</span></div>
+    <div class="history-item"><div class="hist-name">Sertifikat Jahit — Terverifikasi</div><span class="status-pill status-selesai">✓</span></div>
+  </div>
+
+  <div class="bottom-nav" id="nav-pekerja" style="display:none;">
+    <div class="nav-item active" onclick="showScreen('p-beranda')"><span class="nav-icon">🏠</span><span class="nav-label">Beranda</span></div>
+    <div class="nav-item" onclick="showScreen('p-lamaran')"><span class="nav-icon">📋</span><span class="nav-label">Lamaran</span></div>
+    <div class="nav-item" onclick="showScreen('p-profil')"><span class="nav-icon">👤</span><span class="nav-label">Profil</span></div>
+  </div>
+
+  <!-- ================= PERUSAHAAN: BERANDA ================= -->
+  <div class="screen" id="c-beranda">
+    <div class="app-header">
+      <div>
+        <p class="eyebrow">Selamat Pagi</p>
+        <h1 class="page-title" id="c-beranda-company">Perusahaan</h1>
+      </div>
+      <div class="avatar" id="c-beranda-avatar" style="background:var(--orange); color:var(--navy);">PT</div>
+    </div>
+
+    <div class="badge-grid" style="margin-bottom:16px;">
+      <div class="badge"><div class="badge-num">3</div><div class="badge-label">Lowongan Aktif</div></div>
+      <div class="badge"><div class="badge-num">14</div><div class="badge-label">Pelamar Baru</div></div>
+      <div class="badge"><div class="badge-num">4.7</div><div class="badge-label">Rating Anda</div></div>
+    </div>
+
+    <p class="section-label">Lowongan Aktif</p>
+    <div id="c-job-list"></div>
+  </div>
+
+  <!-- ================= PERUSAHAAN: POSTING LOWONGAN ================= -->
+  <div class="screen" id="c-posting">
+    <div class="app-header">
+      <div>
+        <p class="eyebrow">Buat Baru</p>
+        <h1 class="page-title">Posting Lowongan</h1>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nama Posisi</label>
+      <input id="new-job-title" class="form-input" placeholder="mis. Operator Jahit">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Jumlah Tenaga Kerja</label>
+      <input id="new-job-quota" class="form-input" placeholder="mis. 8 orang">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Skill Dibutuhkan</label>
+      <input id="new-job-skills" class="form-input" placeholder="mis. Jahit Mesin, Obras">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Upah per Hari</label>
+      <input id="new-job-wage" class="form-input" placeholder="Rp 150.000">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <textarea id="new-job-desc" class="form-input" placeholder="Jelaskan detail pekerjaan..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="publishJob()">Publikasikan Lowongan</button>
+  </div>
+
+  <!-- ================= PERUSAHAAN: PELAMAR ================= -->
+  <div class="screen" id="c-pelamar">
+    <div class="back-row" onclick="showScreen('c-beranda')">
+      <div class="back-arrow">←</div>
+      <span class="back-label">Kembali</span>
+    </div>
+    <p class="eyebrow" style="margin-bottom:2px;">Nama Lowongan</p>
+    <h1 class="page-title" style="margin-bottom:14px;">0 Pelamar</h1>
+    <div id="c-applicants-list"></div>
+  </div>
+
+  <div class="bottom-nav" id="nav-perusahaan" style="display:none;">
+    <div class="nav-item active" onclick="showScreen('c-beranda')"><span class="nav-icon">🏠</span><span class="nav-label">Beranda</span></div>
+    <div class="nav-item" onclick="showScreen('c-posting')"><span class="nav-icon">➕</span><span class="nav-label">Posting</span></div>
+    <div class="nav-item" onclick="showScreen('c-pelamar')"><span class="nav-icon">👥</span><span class="nav-label">Pelamar</span></div>
+  </div>
+
+<script>
+  const pekerjaScreens = ['p-beranda','p-detail','p-lamaran','p-profil'];
+  const perusahaanScreens = ['c-beranda','c-posting','c-pelamar'];
+  const allScreens = ['login', ...pekerjaScreens, ...perusahaanScreens];
+  let currentUser = null;
+  let selectedJob = null;
+  let jobCounter = 4;
+  const STORAGE_KEY = 'karyaKuJobs';
+  const APPLICATIONS_KEY = 'karyaKuApplications';
+  let applications = [];
+
+  const jobs = [
+    { title: 'Operator Jahit Borongan', companyName: 'Konveksi Maju Jaya', location: '📍 Konveksi Maju Jaya · 1.2 km', match: '92% MATCH', tags: ['3 HARI','8 ORANG','SKILL: JAHIT'], wage: 'Rp 150.000', unit: '/hari', applicants: 14, quota: '8', status: '6/8 TERISI', description: 'Dibutuhkan operator jahit untuk menyelesaikan pesanan borongan seragam sekolah.' },
+    { title: 'Packing Produk Snack', companyName: 'UD Rasa Nusantara', location: '📍 UD Rasa Nusantara · 2.8 km', match: '78% MATCH', tags: ['1 HARI','5 ORANG','SKILL: PACKING'], wage: 'Rp 110.000', unit: '/hari', applicants: 6, quota: '5', status: '5/5 TERISI', description: 'Butuh tim packing untuk produk snack harian.' },
+    { title: 'Bongkar Muat Gudang', companyName: 'Gudang Sentosa Logistik', location: '📍 Gudang Sentosa Logistik · 4.1 km', match: '65% MATCH', tags: ['2 HARI','10 ORANG','SKILL: FISIK'], wage: 'Rp 135.000', unit: '/hari', applicants: 9, quota: '10', status: '9/10 TERISI', description: 'Bongkar muat barang untuk pengiriman ekspres.' }
+  ];
+
+  function showScreen(id){
+    allScreens.forEach(s => document.getElementById(s).classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    // update bottom nav active state
+    const nav = pekerjaScreens.includes(id) ? 'nav-pekerja' : 'nav-perusahaan';
+    document.querySelectorAll('#'+nav+' .nav-item').forEach(n => n.classList.remove('active'));
+    const navMap = {
+      'p-beranda':0,'p-lamaran':1,'p-profil':2,
+      'c-beranda':0,'c-posting':1,'c-pelamar':2
+    };
+    if(navMap[id] !== undefined){
+      document.querySelectorAll('#'+nav+' .nav-item')[navMap[id]].classList.add('active');
+    }
+  }
+
+  function validateLogin(){
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errorEl = document.getElementById('login-error');
+
+    const users = {
+      perusahaan1: { username: 'perusahaan1', password: 'perusahaan123', role: 'perusahaan', displayName: 'PT Maju Bersama', initials: 'MB' },
+      perusahaan2: { username: 'perusahaan2', password: 'perusahaan123', role: 'perusahaan', displayName: 'CV Sinar Sentosa', initials: 'SS' },
+      perusahaan3: { username: 'perusahaan3', password: 'perusahaan123', role: 'perusahaan', displayName: 'UD Rasa Nusantara', initials: 'RN' },
+      perusahaan4: { username: 'perusahaan4', password: 'perusahaan123', role: 'perusahaan', displayName: 'PT Global Logistik', initials: 'GL' },
+      perusahaan5: { username: 'perusahaan5', password: 'perusahaan123', role: 'perusahaan', displayName: 'CV Karya Mandiri', initials: 'KM' },
+      perusahaan6: { username: 'perusahaan6', password: 'perusahaan123', role: 'perusahaan', displayName: 'PT Bintang Sejahtera', initials: 'BS' },
+      perusahaan7: { username: 'perusahaan7', password: 'perusahaan123', role: 'perusahaan', displayName: 'UD Barokah Jaya', initials: 'BJ' },
+      perusahaan8: { username: 'perusahaan8', password: 'perusahaan123', role: 'perusahaan', displayName: 'CV Prima Abadi', initials: 'PA' },
+      perusahaan9: { username: 'perusahaan9', password: 'perusahaan123', role: 'perusahaan', displayName: 'PT Harmoni Indah', initials: 'HI' },
+      perusahaan10: { username: 'perusahaan10', password: 'perusahaan123', role: 'perusahaan', displayName: 'CV Nusantara Kreatif', initials: 'NK' },
+      pekerja1: { username: 'pekerja1', password: 'pekerja123', role: 'pekerja', displayName: 'Budi Santoso', initials: 'BS', rating: '⭐ 4.8 · 27 pekerjaan selesai' },
+      pekerja2: { username: 'pekerja2', password: 'pekerja123', role: 'pekerja', displayName: 'Siti Rahayu', initials: 'SR', rating: '⭐ 4.9 · 19 pekerjaan selesai' },
+      pekerja3: { username: 'pekerja3', password: 'pekerja123', role: 'pekerja', displayName: 'Ahmad Fauzi', initials: 'AF', rating: '⭐ 4.5 · 23 pekerjaan selesai' },
+      pekerja4: { username: 'pekerja4', password: 'pekerja123', role: 'pekerja', displayName: 'Dewi Puspita', initials: 'DP', rating: '⭐ 4.7 · 31 pekerjaan selesai' },
+      pekerja5: { username: 'pekerja5', password: 'pekerja123', role: 'pekerja', displayName: 'Lina Marlina', initials: 'LM', rating: '⭐ 4.6 · 20 pekerjaan selesai' },
+      pekerja6: { username: 'pekerja6', password: 'pekerja123', role: 'pekerja', displayName: 'Slamet Riyadi', initials: 'SR', rating: '⭐ 4.4 · 18 pekerjaan selesai' },
+      pekerja7: { username: 'pekerja7', password: 'pekerja123', role: 'pekerja', displayName: 'Rina Sari', initials: 'RS', rating: '⭐ 4.7 · 24 pekerjaan selesai' },
+      pekerja8: { username: 'pekerja8', password: 'pekerja123', role: 'pekerja', displayName: 'Eko Putra', initials: 'EP', rating: '⭐ 4.5 · 16 pekerjaan selesai' },
+      pekerja9: { username: 'pekerja9', password: 'pekerja123', role: 'pekerja', displayName: 'Nina Wahyuni', initials: 'NW', rating: '⭐ 4.8 · 22 pekerjaan selesai' },
+      pekerja10: { username: 'pekerja10', password: 'pekerja123', role: 'pekerja', displayName: 'Doni Pratama', initials: 'DP', rating: '⭐ 4.6 · 28 pekerjaan selesai' }
+    };
+
+    const user = Object.values(users).find(u => u.username === username && u.password === password);
+    const role = user ? user.role : null;
+
+    if (!role) {
+      errorEl.textContent = 'Username atau password salah.';
+      return;
+    }
+    errorEl.textContent = '';
+    currentUser = user;
+    renderPekerjaUser(currentUser);
+    renderJobs();
+    setRole(role);
+  }
+
+  function loginAs(role){
+    setRole(role);
+  }
+
+  function renderJobCard(job, onclickTarget){
+    return `
+      <div class="job-card" onclick="selectJob(${jobs.indexOf(job)}); showScreen('${onclickTarget}')">
+        <div class="inner">
+          <div class="job-top">
+            <div>
+              <p class="job-name">${job.title}</p>
+              <p class="job-loc">${job.location}</p>
+            </div>
+            <span class="match-badge">${job.match}</span>
+          </div>
+          <div class="job-meta">
+            <span class="meta-tag company-tag">${job.companyName || 'Perusahaan'}</span>
+            ${job.tags.map(tag => `<span class="meta-tag">${tag}</span>`).join('')}
+          </div>
+          <div class="job-bottom">
+            <span class="wage">${job.wage} <span>${job.unit}</span></span>
+            <button class="go-btn">${onclickTarget === 'c-pelamar' ? 'Kelola' : 'Lihat Detail'}</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function selectJob(index){
+    selectedJob = jobs[index];
+    renderJobDetail();
+  }
+
+  function renderJobDetail(){
+    if (!selectedJob) return;
+    
+    const hero = document.querySelector('#p-detail .detail-hero');
+    const desc = document.querySelector('#p-detail .desc-text');
+    const skillRow = document.querySelector('#p-detail .skill-row');
+    const wageText = document.querySelectorAll('#p-detail .desc-text')[1];
+    
+    hero.innerHTML = `
+      <p class="job-name">${selectedJob.title}</p>
+      <p class="job-loc">📍 ${selectedJob.location}</p>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">${selectedJob.match}</div><div class="stat-label">Match</div></div>
+        <div class="stat-box"><div class="stat-num">${selectedJob.quota}</div><div class="stat-label">Kuota</div></div>
+        <div class="stat-box"><div class="stat-num">${selectedJob.companyName}</div><div class="stat-label">Perusahaan</div></div>
+      </div>
+    `;
+    
+    if (desc) {
+      desc.textContent = selectedJob.description;
+    }
+    
+    if (wageText) {
+      wageText.textContent = `${selectedJob.wage}${selectedJob.unit} — dibayar otomatis ke saldo KaryaKu setelah presensi diverifikasi.`;
+    }
+    
+    if (skillRow) {
+      skillRow.innerHTML = (selectedJob.tags || []).map(tag => `<span class="skill-pill">${tag}</span>`).join('');
+    }
+  }
+
+  function renderJobs(){
+    const pJobCount = document.getElementById('p-job-count');
+    const pJobList = document.getElementById('p-job-list');
+    const cJobList = document.getElementById('c-job-list');
+
+    pJobCount.textContent = `${jobs.length} lowongan cocok untuk anda`;
+    pJobList.innerHTML = jobs.map(job => renderJobCard(job, 'p-detail')).join('');
+    cJobList.innerHTML = jobs.map((job, idx) => `
+      <div class="job-card" onclick="selectCompanyJob(${idx}); renderApplicants(); showScreen('c-pelamar')">
+        <div class="inner">
+          <div class="job-top">
+            <div>
+              <p class="job-name">${job.title}</p>
+              <p class="job-loc">${job.location}</p>
+            </div>
+            <span class="match-badge">${job.status}</span>
+          </div>
+          <div class="job-meta">
+            <span class="meta-tag company-tag">${job.companyName || 'Perusahaan'}</span>
+            <span class="meta-tag">${applications.filter(a => a.jobTitle === job.title).length} PELAMAR</span>
+            <span class="meta-tag">${job.tags[0] || ''}</span>
+          </div>
+          <div class="job-bottom">
+            <span class="wage">${job.wage} <span>${job.unit}</span></span>
+            <button class="go-btn">Kelola</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function publishJob(){
+    const title = document.getElementById('new-job-title').value.trim();
+    const quota = document.getElementById('new-job-quota').value.trim() || 'N/A';
+    const skills = document.getElementById('new-job-skills').value.trim() || 'N/A';
+    const wage = document.getElementById('new-job-wage').value.trim() || 'Rp 0';
+    const desc = document.getElementById('new-job-desc').value.trim() || 'Deskripsi tidak tersedia.';
+
+    if (!title) {
+      alert('Masukkan nama posisi terlebih dahulu.');
+      return;
+    }
+
+    const companyName = currentUser?.role === 'perusahaan' ? currentUser.displayName : 'Perusahaan';
+
+    jobCounter += 1;
+    jobs.unshift({
+      title,
+      companyName,
+      location: `📍 ${companyName} · Dibuka hari ini`,
+      match: 'Baru',
+      tags: [quota, `SKILL: ${skills}`],
+      wage,
+      unit: '/hari',
+      applicants: 0,
+      quota: quota,
+      status: '0/' + quota.replace(/\D/g,'') + ' TERISI',
+      description: desc
+    });
+
+    saveJobsToStorage();
+    renderJobs();
+    showScreen('c-beranda');
+    document.getElementById('new-job-title').value = '';
+    document.getElementById('new-job-quota').value = '';
+    document.getElementById('new-job-skills').value = '';
+    document.getElementById('new-job-wage').value = '';
+    document.getElementById('new-job-desc').value = '';
+  }
+
+  function saveJobsToStorage(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
+    } catch (err) {
+      console.warn('Gagal menyimpan jobs ke localStorage:', err);
+    }
+  }
+
+  function loadJobsFromStorage(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        jobs.splice(0, jobs.length, ...parsed);
+      }
+    } catch (err) {
+      console.warn('Gagal memuat jobs dari localStorage:', err);
+    }
+  }
+
+  loadJobsFromStorage();
+
+  function loadApplicationsFromStorage(){
+    try {
+      const raw = localStorage.getItem(APPLICATIONS_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        applications = parsed;
+      }
+    } catch (err) {
+      console.warn('Gagal memuat applications dari localStorage:', err);
+    }
+  }
+
+  function saveApplicationsToStorage(){
+    try {
+      localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(applications));
+    } catch (err) {
+      console.warn('Gagal menyimpan applications ke localStorage:', err);
+    }
+  }
+
+  loadApplicationsFromStorage();
+
+  function renderPekerjaUser(user){
+    if (!user) return;
+    document.getElementById('p-beranda-name').textContent = user.displayName;
+    document.getElementById('p-beranda-avatar').textContent = user.initials;
+    document.getElementById('p-profile-name').textContent = user.displayName;
+    document.getElementById('p-profile-avatar').textContent = user.initials;
+    document.getElementById('p-profile-rating').textContent = user.rating;
+
+    if (user.role === 'perusahaan') {
+      document.getElementById('c-beranda-company').textContent = user.displayName;
+      document.getElementById('c-beranda-avatar').textContent = user.initials;
+    }
+  }
+
+  function submitApplication(){
+    if (!selectedJob || !currentUser) {
+      alert('Terjadi kesalahan. Silakan coba lagi.');
+      return;
+    }
+
+    const existingCompanyApp = applications.find(app => 
+      app.workerId === currentUser.username && 
+      app.companyName === selectedJob.companyName &&
+      app.status !== 'Diterima'
+    );
+    if (existingCompanyApp) {
+      alert('Anda sudah melamar perusahaan ini dengan status belum diterima. Silakan tunggu atau pilih perusahaan lain.');
+      return;
+    }
+
+    const alreadyAppliedSameJob = applications.some(app => 
+      app.workerId === currentUser.username && 
+      app.jobTitle === selectedJob.title
+    );
+    if (alreadyAppliedSameJob) {
+      alert('Anda sudah melamar pekerjaan ini.');
+      return;
+    }
+
+    const application = {
+      id: Date.now(),
+      workerId: currentUser.username,
+      workerName: currentUser.displayName,
+      workerInitials: currentUser.initials,
+      workerRating: currentUser.rating,
+      jobTitle: selectedJob.title,
+      companyName: selectedJob.companyName,
+      jobMatch: selectedJob.match,
+      status: 'Menunggu',
+      appliedDate: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' }),
+      appliedTime: new Date().toLocaleTimeString('id-ID')
+    };
+
+    applications.unshift(application);
+    saveApplicationsToStorage();
+    alert('Lamaran Anda telah dikirim!');
+    showScreen('p-lamaran');
+    renderApplications();
+  }
+
+  function renderApplications(){
+    const lamaranSection = document.querySelector('#p-lamaran');
+    if (!lamaranSection) return;
+
+    const userApplications = applications.filter(app => app.workerId === currentUser?.username);
+    const berjalan = userApplications.filter(app => app.status === 'Menunggu');
+    const selesai = userApplications.filter(app => app.status === 'Selesai' || app.status === 'Diterima' || app.status === 'Ditolak');
+
+    const getStatusClass = status => {
+      if (status === 'Menunggu') return 'status-berjalan';
+      if (status === 'Diterima') return 'status-diterima';
+      if (status === 'Ditolak') return 'status-ditolak';
+      return 'status-selesai';
+    };
+
+    let html = '<p class="section-label">Sedang Berjalan</p>';
+    if (berjalan.length === 0) {
+      html += '<p class="desc-text" style="text-align:center; color:var(--ink-soft);">Belum ada lamaran aktif</p>';
+    } else {
+      html += berjalan.map(app => `
+        <div class="history-item">
+          <div>
+            <div class="hist-name">${app.jobTitle}</div>
+            <div class="hist-date">Dilamar ${app.appliedDate}</div>
+          </div>
+          <span class="status-pill ${getStatusClass(app.status)}">${app.status}</span>
+        </div>
+      `).join('');
+    }
+
+    html += '<p class="section-label" style="margin-top:16px;">Riwayat Selesai</p>';
+    if (selesai.length === 0) {
+      html += '<p class="desc-text" style="text-align:center; color:var(--ink-soft);">Belum ada</p>';
+    } else {
+      html += selesai.map(app => `
+        <div class="history-item">
+          <div>
+            <div class="hist-name">${app.jobTitle}</div>
+            <div class="hist-date">${app.appliedDate}</div>
+          </div>
+          <span class="status-pill ${getStatusClass(app.status)}">${app.status}</span>
+        </div>
+      `).join('');
+    }
+
+    const appContent = lamaranSection.innerHTML;
+    const startIdx = appContent.indexOf('<p class="section-label">Sedang Berjalan</p>');
+    if (startIdx !== -1) {
+      lamaranSection.innerHTML = appContent.substring(0, startIdx) + html;
+    }
+  }
+
+  function selectCompanyJob(index){
+    selectedJob = jobs[index];
+  }
+
+  function renderApplicants(){
+    const pelamarScreen = document.querySelector('#c-pelamar');
+    if (!selectedJob || !pelamarScreen) return;
+
+    const jobApplicants = applications.filter(app => app.jobTitle === selectedJob.title);
+    const eyebrow = pelamarScreen.querySelector('.eyebrow');
+    const title = pelamarScreen.querySelector('.page-title');
+    const applicantsList = document.getElementById('c-applicants-list');
+
+    if (eyebrow) eyebrow.textContent = selectedJob.title;
+    if (title) title.textContent = `${jobApplicants.length} Pelamar`;
+
+    let html = '';
+    if (jobApplicants.length === 0) {
+      html = '<p class="desc-text" style="text-align:center; color:var(--ink-soft); margin-top:16px;">Belum ada pelamar untuk lowongan ini</p>';
+    } else {
+      html = jobApplicants.map(app => `
+        <div class="candidate-card">
+          <div class="cand-avatar">${app.workerInitials}</div>
+          <div class="cand-info">
+            <div class="cand-name">${app.workerName}</div>
+            <div class="cand-meta">${app.workerRating}</div>
+          </div>
+          <div class="cand-actions">
+            <button class="cand-action" onclick="updateApplicationStatus(${app.id}, 'Diterima')">Terima</button>
+            <button class="cand-action reject" onclick="updateApplicationStatus(${app.id}, 'Ditolak')">Tolak</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    if (applicantsList) {
+      applicantsList.innerHTML = html;
+    }
+  }
+
+  function updateApplicationStatus(appId, newStatus){
+    const app = applications.find(a => a.id === appId);
+    if (app) {
+      app.status = newStatus;
+      saveApplicationsToStorage();
+      renderApplicants();
+      alert(`Lamaran ${app.workerName} telah ${newStatus}!`);
+    }
+  }
+
+  function setRole(role){
+    document.getElementById('nav-pekerja').style.display = role==='pekerja' ? 'flex' : 'none';
+    document.getElementById('nav-perusahaan').style.display = role==='perusahaan' ? 'flex' : 'none';
+    if (role === 'pekerja') {
+      renderPekerjaUser(currentUser);
+      renderJobs();
+      renderApplications();
+    } else if (role === 'perusahaan') {
+      renderJobs();
+      if (jobs.length > 0) {
+        selectCompanyJob(0);
+        renderApplicants();
+      }
+    }
+    showScreen(role==='pekerja' ? 'p-beranda' : 'c-beranda');
+  }
+</script>
+
+</body>
+</html>
